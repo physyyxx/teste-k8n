@@ -1,17 +1,29 @@
+version: 2.1
+
 jobs:
   build-and-push:
     docker:
       - image: cimg/python:3.11
     steps:
+      # Passo 1: pega o código do repositório
       - checkout
+
+      # Passo 2: habilita Docker remoto para build
       - setup_remote_docker:
           docker_layer_caching: true
-      - run:
-          name: Docker login
-          command: docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASS
+
+      # Passo 3: build da imagem Docker
       - run:
           name: Build Docker image
           command: docker build -t physyx/minhaapp:latest .
+
+      # Passo 4: login no Docker Hub usando variáveis de ambiente do CircleCI
+      - run:
+          name: Docker login
+          command: |
+            echo $DOCKERHUB_PASS | docker login --username $DOCKERHUB_USER --password-stdin
+
+      # Passo 5: push da imagem para o Docker Hub
       - run:
           name: Push Docker image
           command: docker push physyx/minhaapp:latest
