@@ -13,7 +13,7 @@ jobs:
           command: docker build -t physyx/minhaapp:latest .
       - run:
           name: Docker login
-          command: docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASS
+          command: echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin
       - run:
           name: Push Docker image
           command: docker push physyx/minhaapp:latest
