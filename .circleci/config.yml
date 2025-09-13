@@ -1,14 +1,14 @@
-orbs:
-  docker: circleci/docker@2.1
-
 jobs:
   build-and-push:
-    executor: docker/docker
+    docker:
+      - image: cimg/python:3.11
     steps:
       - checkout
-      - docker/login:
-          username: $DOCKERHUB_USER
-          password: $DOCKERHUB_PASS
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Docker login
+          command: docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASS
       - run:
           name: Build Docker image
           command: docker build -t physyx/minhaapp:latest .
