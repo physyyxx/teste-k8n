@@ -12,7 +12,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
 
-      # Passo 3: build da imagem Docker
+      # Passo 3: build da imagem Docker 
       - run:
           name: Build Docker image
           command: docker build -t physyx/minhaapp:latest .
