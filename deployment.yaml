@@ -1,7 +1,23 @@
+# --- INÍCIO DO OBJETO DEPLOYMENT ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: minhaapp
+  # --- INÍCIO DAS MODIFICAÇÕES PARA O KEEL ---
+  # 1. Adicione esta label para que o Keel saiba que deve gerenciar este deployment.
+  labels:
+    keel.sh/policy: all
+  annotations:
+    # 2. Defina a política de atualização. 'all' significa que qualquer nova tag
+    #    da imagem no Docker Hub irá acionar uma atualização.
+    keel.sh/policy: all
+    # 3. Defina o gatilho. 'poll' faz com que o Keel verifique o Docker Hub
+    #    periodicamente (a cada 5 minutos por padrão).
+    keel.sh/trigger: poll
+    # 4. (Opcional) Adicione uma notificação. Você pode configurar o Keel para
+    #    avisar no Slack, Teams, etc., quando uma atualização for feita.
+    # keel.sh/notify: "slack://..."
+  # --- FIM DAS MODIFICAÇÕES PARA O KEEL ---
 spec:
   replicas: 2
   selector:
@@ -9,16 +25,20 @@ spec:
       app: minhaapp
   template:
     metadata:
+      # Etiqueta original dos Pods
       labels:
         app: minhaapp
     spec:
       containers:
       - name: minhaapp
+        # A imagem base que o Keel irá monitorar e atualizar.
+        # Ele vai trocar 'latest' pela tag mais recente que encontrar.
         image: physyx/minhaapp:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
 ---
+# --- O OBJETO SERVICE NÃO PRECISA DE ALTERAÇÕES ---
 apiVersion: v1
 kind: Service
 metadata:
