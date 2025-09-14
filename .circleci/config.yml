@@ -54,4 +54,5 @@ workflows:
           filters:
             branches:
               only:
+                - master
                 - teste-k8n # Ou a branch que você usa para deploy, como 'main'
