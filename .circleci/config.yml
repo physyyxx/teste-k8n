@@ -1,9 +1,9 @@
 version: 2.1
 
 jobs:
-  build-push-and-deploy:
+  build-and-push:
     docker:
-      - image: cimg/base:2023.08  # Imagem base que já inclui docker e kubectl
+      - image: cimg/python:3.11
     steps:
       # Passo 1: Pega o código do repositório
       - checkout
@@ -16,7 +16,7 @@ jobs:
       - run:
           name: Build and Push Docker Image
           command: |
-            # Define a tag única usando os 7 primeiros caracteres do hash do commit Git
+            # Define uma tag única usando os 7 primeiros caracteres do hash do commit Git
             IMAGE_TAG=${CIRCLE_SHA1:0:7}
             
             # Constrói a imagem com duas tags: a única e a 'latest'
@@ -29,30 +29,13 @@ jobs:
             docker push physyx/minhaapp:$IMAGE_TAG
             docker push physyx/minhaapp:latest
 
-      # Passo 4: Faz o deploy da nova imagem no Kubernetes
-      - run:
-          name: Deploy to Kubernetes
-          command: |
-            # ❗ AVISO: Este passo requer que você configure o acesso ao seu cluster Kubernetes
-            # no CircleCI, seja instalando e configurando o 'kubectl' manualmente
-            # ou usando um Orb (ex: circleci/kubernetes).
-            
-            # Define a mesma tag única para o deploy
-            IMAGE_TAG=${CIRCLE_SHA1:0:7}
-            
-            # Atualiza a imagem do deployment no Kubernetes para usar a tag nova e única
-            # A flag '--record' é útil para ver o histórico de rollouts
-            kubectl set image deployment/minhaapp minhaapp=physyx/minhaapp:$IMAGE_TAG --record
-
 workflows:
   version: 2
-  build-and-deploy-workflow:
+  build-and-push-workflow:
     jobs:
-      - build-push-and-deploy:
-          # Opcional, mas recomendado: filtre para rodar este workflow apenas em pushes
-          # para a sua branch principal (ex: main ou master)
+      - build-and-push:
           filters:
             branches:
               only:
                 - master
-                - teste-k8n # Ou a branch que você usa para deploy, como 'main'
+                - teste-k8n
