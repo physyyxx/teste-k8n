@@ -15,6 +15,7 @@ spec:
       containers:
       - name: minhaapp
         image: physyx/minhaapp:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
 ---

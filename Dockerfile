@@ -1,16 +1,13 @@
 FROM python:3.11-slim
 
 WORKDIR /app
+
+# Instala dependências
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copia o código da aplicação
 COPY . .
 
-CMD ["python", "app.py"]
-FROM python:3.11-slim
-
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-COPY . .
-
+# Comando para rodar a aplicação
 CMD ["python", "app.py"]
